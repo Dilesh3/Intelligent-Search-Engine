@@ -29,12 +29,15 @@ tests/
 
 ## Status
 
-Under Development
+🚧 Under Development
 
-Current Progress:
-- [x] Project Design
-- [ ] Trie Implementation
-- [ ] Autocomplete
-- [ ] Spell Correction
-- [ ] Ranking
-- [ ] Benchmarking
+### Milestones
+
+- ✅ Project Design
+- ✅ Repository Setup
+- ✅ Project Structure
+- ⏳ Trie Implementation (In Progress)
+- ⏳ Autocomplete
+- ⏳ Spell Correction
+- ⏳ Frequency-based Ranking
+- ⏳ Performance Benchmarking
