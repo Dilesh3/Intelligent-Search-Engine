@@ -24,6 +24,7 @@ include/
 data/
 docs/
 benchmark/
+tests/
 
 
 ## Status
