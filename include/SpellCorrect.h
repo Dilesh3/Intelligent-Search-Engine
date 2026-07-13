@@ -8,16 +8,16 @@
 class SpellCorrector {
 private:
 
-    // Stores all dictionary words for spell correction.
+    // Stores all dictionary words.
     std::vector<std::string> dictionary;
 
-    // Computes the Levenshtein edit distance between two words.
+    // Computes Levenshtein edit distance.
     int levenshteinDistance(const std::string& s1,
                             const std::string& s2) const;
 
 public:
 
-    // Loads all words from the dictionary file.
+    // Loads dictionary words.
     bool loadDictionary(const std::string& filename);
 
     // Returns the top spelling suggestions.
