@@ -17,8 +17,7 @@ class Trie {
 private:
     TrieNode* root;
 
-    void dfs(TrieNode* node, string currentWord,
-             vector<string>& suggestions);
+    void dfs(TrieNode* node, string currentWord, vector<string>& suggestions);
 
 public:
     Trie();
