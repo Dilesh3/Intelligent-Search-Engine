@@ -7,7 +7,7 @@ int main() {
     SearchEngine engine;
 
     // Load dictionary
-    if (!engine.loadDictionary("data/sample_words.txt")) {
+    if (!engine.loadDictionary("data/words_alpha.txt")) {
         std::cout << "Failed to load dictionary.\n";
         return 1;
     }
