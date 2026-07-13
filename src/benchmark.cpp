@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <chrono>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <random>
 #include <string>
@@ -41,131 +42,120 @@ int main() {
     // Benchmark Configuration
     //--------------------------------------------------
 
-    constexpr int EXISTING_QUERIES = 5000;
-    constexpr int NON_EXISTING_QUERIES = 5000;
+    vector<int> benchmarkSizes = {100, 1000, 5000, 10000, 20000};
     constexpr int ROUNDS = 5;
 
     random_device rd;
     mt19937 gen(rd());
 
-    //--------------------------------------------------
-    // Generate Existing Queries
-    //--------------------------------------------------
+    cout << fixed << setprecision(3);
 
-    vector<string> queries;
-    queries.reserve(EXISTING_QUERIES + NON_EXISTING_QUERIES);
+    cout << left
+         << setw(12) << "Queries"
+         << setw(20) << "Trie (us)"
+         << setw(20) << "Linear (us)"
+         << setw(15) << "Speedup"
+         << "\n";
 
-    vector<int> indices(dictionary.size());
-
-    for (int i = 0; i < (int)dictionary.size(); i++)
-        indices[i] = i;
-
-    shuffle(indices.begin(), indices.end(), gen);
-
-    for (int i = 0; i < EXISTING_QUERIES; i++) {
-        queries.push_back(dictionary[indices[i]]);
-    }
-
-    //--------------------------------------------------
-    // Generate Non-existing Queries
-    //--------------------------------------------------
-
-    for (int i = 0; i < NON_EXISTING_QUERIES; i++) {
-        queries.push_back(dictionary[indices[i]] + "zzz");
-    }
-
-    shuffle(queries.begin(), queries.end(), gen);
-
-    cout << "Benchmark Queries : " << queries.size() << "\n";
-    cout << "Rounds            : " << ROUNDS << "\n\n";
-
-    //--------------------------------------------------
-    // Warm-up
-    //--------------------------------------------------
+    cout << string(67, '-') << "\n";
 
     volatile int dummy = 0;
 
-    for (const auto &q : queries)
-        dummy += trie.search(q);
+    for (int totalQueries : benchmarkSizes) {
 
-    for (const auto &q : queries)
-        dummy += (find(dictionary.begin(),
-                       dictionary.end(),
-                       q) != dictionary.end());
+        int existingQueries = totalQueries / 2;
+        int nonExistingQueries = totalQueries / 2;
 
-    //--------------------------------------------------
-    // Trie Benchmark
-    //--------------------------------------------------
+        //--------------------------------------------------
+        // Generate Queries
+        //--------------------------------------------------
 
-    long long trieTotal = 0;
+        vector<string> queries;
+        queries.reserve(totalQueries);
 
-    for (int r = 0; r < ROUNDS; r++) {
+        vector<int> indices(dictionary.size());
 
-        auto start = high_resolution_clock::now();
+        for (int i = 0; i < (int)dictionary.size(); i++)
+            indices[i] = i;
+
+        shuffle(indices.begin(), indices.end(), gen);
+
+        // Existing queries
+        for (int i = 0; i < existingQueries; i++)
+            queries.push_back(dictionary[indices[i]]);
+
+        // Non-existing queries
+        for (int i = 0; i < nonExistingQueries; i++)
+            queries.push_back(dictionary[indices[i]] + "zzz");
+
+        shuffle(queries.begin(), queries.end(), gen);
+
+        //--------------------------------------------------
+        // Warm-up
+        //--------------------------------------------------
 
         for (const auto &q : queries)
             dummy += trie.search(q);
-
-        auto stop = high_resolution_clock::now();
-
-        trieTotal +=
-            duration_cast<microseconds>(stop - start).count();
-    }
-
-    //--------------------------------------------------
-    // Linear Search Benchmark
-    //--------------------------------------------------
-
-    long long linearTotal = 0;
-
-    for (int r = 0; r < ROUNDS; r++) {
-
-        auto start = high_resolution_clock::now();
 
         for (const auto &q : queries)
             dummy += (find(dictionary.begin(),
                            dictionary.end(),
                            q) != dictionary.end());
 
-        auto stop = high_resolution_clock::now();
+        //--------------------------------------------------
+        // Trie Benchmark
+        //--------------------------------------------------
 
-        linearTotal +=
-            duration_cast<microseconds>(stop - start).count();
+        long long trieTotal = 0;
+
+        for (int r = 0; r < ROUNDS; r++) {
+
+            auto start = high_resolution_clock::now();
+
+            for (const auto &q : queries)
+                dummy += trie.search(q);
+
+            auto stop = high_resolution_clock::now();
+
+            trieTotal +=
+                duration_cast<microseconds>(stop - start).count();
+        }
+
+        //--------------------------------------------------
+        // Linear Benchmark
+        //--------------------------------------------------
+
+        long long linearTotal = 0;
+
+        for (int r = 0; r < ROUNDS; r++) {
+
+            auto start = high_resolution_clock::now();
+
+            for (const auto &q : queries)
+                dummy += (find(dictionary.begin(),
+                               dictionary.end(),
+                               q) != dictionary.end());
+
+            auto stop = high_resolution_clock::now();
+
+            linearTotal +=
+                duration_cast<microseconds>(stop - start).count();
+        }
+
+        //--------------------------------------------------
+        // Results
+        //--------------------------------------------------
+
+        double avgTrie = trieTotal / static_cast<double>(ROUNDS);
+        double avgLinear = linearTotal / static_cast<double>(ROUNDS);
+
+        cout << left
+             << setw(12) << totalQueries
+             << setw(20) << avgTrie
+             << setw(20) << avgLinear
+             << setw(15) << avgLinear / avgTrie
+             << "\n";
     }
-
-    //--------------------------------------------------
-    // Results
-    //--------------------------------------------------
-
-    double avgTrie = trieTotal / static_cast<double>(ROUNDS);
-    double avgLinear = linearTotal / static_cast<double>(ROUNDS);
-
-    cout << fixed;
-    cout.precision(3);
-
-    cout << "============== RESULTS ==============\n\n";
-
-    cout << "Trie Search\n";
-    cout << "Average Time      : "
-         << avgTrie
-         << " microseconds\n";
-
-    cout << "Average Per Query : "
-         << avgTrie / queries.size()
-         << " microseconds\n\n";
-
-    cout << "Linear Search\n";
-    cout << "Average Time      : "
-         << avgLinear
-         << " microseconds\n";
-
-    cout << "Average Per Query : "
-         << avgLinear / queries.size()
-         << " microseconds\n\n";
-
-    cout << "Speedup (Linear/Trie) : "
-         << avgLinear / avgTrie
-         << "x\n";
 
     cout << "\n(ignore " << dummy << ")\n";
 
