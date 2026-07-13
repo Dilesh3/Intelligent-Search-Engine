@@ -1,4 +1,6 @@
 #include "../include/Trie.h"
+#include<algorithm>
+
 
 TrieNode::TrieNode() {
     isEndOfWord = false;
@@ -86,7 +88,7 @@ void Trie::dfs(TrieNode* node, std::string& currentWord,
 
         if (node->children[i] != nullptr) {
 
-            currentWord.emplace_back('a' + i);
+            currentWord.push_back('a' + i);
 
             dfs(node->children[i], currentWord, suggestions);
 
