@@ -1,47 +1,112 @@
 #include <iostream>
+#include <vector>
 #include "../include/SearchEngine.h"
 
 int main() {
+
     SearchEngine engine;
 
     // Load dictionary
-    if (!engine.loadDictionary("data/words.txt")) {
+    if (!engine.loadDictionary("data/sample_words.txt")) {
         std::cout << "Failed to load dictionary.\n";
         return 1;
     }
 
-    std::cout << "Dictionary loaded successfully!\n\n";
+    std::cout << "Dictionary loaded successfully!\n";
 
-    // Test exact search
-    std::string word = "apple";
+    int choice;
 
-    if (engine.search(word))
-        std::cout << "'" << word << "' found.\n";
-    else
-        std::cout << "'" << word << "' not found.\n";
+    do {
 
-    word = "xyz";
+        std::cout << "\n========== Intelligent Search Engine ==========\n";
+        std::cout << "1. Search Word\n";
+        std::cout << "2. Autocomplete\n";
+        std::cout << "3. Exit\n";
+        std::cout << "Enter your choice: ";
 
-    if (engine.search(word))
-        std::cout << "'" << word << "' found.\n";
-    else
-        std::cout << "'" << word << "' not found.\n";
+        std::cin >> choice;
 
-    std::cout << "\n";
+        switch (choice) {
 
-    // Test autocomplete
-    std::string prefix = "app";
+        case 1: {
 
-    auto suggestions = engine.autocomplete(prefix);
+            std::string word;
 
-    std::cout << "Autocomplete suggestions for \"" << prefix << "\":\n";
+            std::cout << "Enter word: ";
+            std::cin >> word;
 
-    for (const auto& suggestion : suggestions) {
-        std::cout << suggestion.first
-                  << " (frequency = "
-                  << suggestion.second
-                  << ")\n";
-    }
+            if (engine.search(word)) {
+
+                std::cout << "'" << word << "' found.\n";
+
+            } else {
+
+                std::cout << "'" << word << "' not found.\n\n";
+
+                auto suggestions = engine.spellCorrect(word);
+
+                if (!suggestions.empty()) {
+
+                    std::cout << "Did you mean:\n";
+
+                    for (size_t i = 0; i < suggestions.size(); i++) {
+                        std::cout << i + 1 << ". "
+                                  << suggestions[i].first
+                                  << " (Edit Distance = "
+                                  << suggestions[i].second
+                                  << ")\n";
+                    }
+
+                } else {
+
+                    std::cout << "No spelling suggestions found.\n";
+
+                }
+            }
+
+            break;
+        }
+
+        case 2: {
+
+            std::string prefix;
+
+            std::cout << "Enter prefix: ";
+            std::cin >> prefix;
+
+            auto suggestions = engine.autocomplete(prefix);
+
+            if (suggestions.empty()) {
+
+                std::cout << "No suggestions found.\n";
+
+            } else {
+
+                std::cout << "\nAutocomplete Suggestions:\n";
+
+                for (const auto& suggestion : suggestions) {
+
+                    std::cout << suggestion.first
+                              << " (Frequency = "
+                              << suggestion.second
+                              << ")\n";
+                }
+            }
+
+            break;
+        }
+
+        case 3:
+
+            std::cout << "Exiting...\n";
+            break;
+
+        default:
+
+            std::cout << "Invalid choice. Please try again.\n";
+        }
+
+    } while (choice != 3);
 
     return 0;
 }
