@@ -60,7 +60,7 @@ public:
     autocomplete(const std::string& prefix) const;
 
     // Updates the frequency of the word.
-    bool updateFrequency(const std::string& word, int frequency);
+    bool updateFrequency(const std::string& word);
 };
 
 #endif
