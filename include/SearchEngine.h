@@ -7,30 +7,35 @@
 
 #include "Trie.h"
 #include "DictionaryLoader.h"
+#include "SpellCorrector.h"
 
 class SearchEngine {
 private:
-    // Core data structure that stores all indexed words
-    // and provides efficient search and autocomplete operations.
+
+    // Trie used for indexing and autocomplete.
     Trie trie;
 
+    // Handles fuzzy search and spelling suggestions.
+    SpellCorrector spellCorrector;
+
 public:
-    // Constructs an empty search engine.
-    // The Trie is automatically initialized.
+
     SearchEngine() = default;
 
-    // Loads all words from the specified dictionary file
-    // into the Trie. Returns true if successful.
+    // Loads both Trie and SpellCorrector.
     bool loadDictionary(const std::string& filename);
 
-    // Performs an exact search for a word.
-    // If the word exists, its search frequency is updated.
+    // Performs exact search and updates frequency.
     bool search(const std::string& word);
 
-    // Returns all words beginning with the given prefix,
-    // ranked by their search frequencies.
-    std::vector<std::pair<std::string, int>>
+    // Returns autocomplete suggestions.
+    std::vector<std::pair<std::string,int>>
     autocomplete(const std::string& prefix) const;
+
+    // Returns spelling suggestions.
+    std::vector<std::pair<std::string,int>>
+    spellCorrect(const std::string& word,
+                 int maxSuggestions = 5) const;
 };
 
 #endif
