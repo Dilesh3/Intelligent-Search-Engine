@@ -13,7 +13,7 @@ int main() {
     Trie trie;
     std::vector<std::string> dictionary;
 
-    std::ifstream file("data/sample_words.txt");
+    std::ifstream file("data/words_alpha.txt");
 
     if (!file.is_open()) {
         std::cout << "Failed to open dictionary.\n";
