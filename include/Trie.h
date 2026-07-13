@@ -47,7 +47,7 @@ public:
     ~Trie();
 
     // Inserts a word into the Trie.
-    void insert(const std::string& word, int frequency = 0);
+    void insert(const std::string& word);
 
     // Returns true if the exact word exists.
     bool search(const std::string& word) const;
