@@ -16,12 +16,12 @@ private:
                             const std::string& s2) const;
 
 public:
-
+    using Suggestion = std::pair<std::string,int>;
     // Loads dictionary words.
     bool loadDictionary(const std::string& filename);
 
     // Returns the top spelling suggestions.
-    std::vector<std::pair<std::string,int>>
+    std::vector<Suggestion>
     suggest(const std::string& word,
             int maxSuggestions = 5) const;
 };
