@@ -87,7 +87,7 @@ bool Trie::startsWith(const std::string& prefix) const{
 
 
 void Trie::dfs(TrieNode* node, std::string& currentWord,
-               std::vector<std::pair<std::string, int>>& suggestions) const {
+               std::vector<Trie::Suggestion>& suggestions) const {
 
     if (node == nullptr)  return;
 
@@ -161,9 +161,9 @@ void Trie::dfsHeap(
 }
 
 
-std::vector<std::pair<std::string, int>> 
+std::vector<Trie::Suggestion> 
 Trie::autocomplete(const std::string& prefix, int k) const {
-    std::vector<std::pair<std::string, int>> suggestions;
+    std::vector<Trie::Suggestion> suggestions;
 
     TrieNode* node = getNode(prefix);
 
