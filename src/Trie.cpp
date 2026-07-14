@@ -130,14 +130,18 @@ void Trie::dfsHeap(
             heap.push(current);
 
         }
-           else if (
-               current.second > heap.top().second ||
-               (current.second == heap.top().second &&
-               current.first < heap.top().first)
-               ) {
-                    heap.pop();
-                    heap.push(current);
-           }
+        else {
+
+            const Suggestion& worst = heap.top();
+
+            if (current.second > worst.second ||
+                (current.second == worst.second &&
+                 current.first < worst.first)) {
+
+                heap.pop();
+                heap.push(current);
+            }
+        }
     }
 
     for (int i = 0; i < 26; i++) {
@@ -146,11 +150,10 @@ void Trie::dfsHeap(
 
             currentWord.push_back('a' + i);
 
-            dfsHeap(
-                node->children[i],
-                currentWord,
-                heap,
-                k);
+            dfsHeap(node->children[i],
+                    currentWord,
+                    heap,
+                    k);
 
             currentWord.pop_back();
         }
@@ -180,6 +183,43 @@ std::vector<std::pair<std::string, int>> Trie::autocomplete(const std::string& p
 
     return suggestions;
 }
+
+std::vector<Trie::Suggestion>
+Trie::autocompleteHeap(const std::string& prefix, int k) const {
+
+    std::vector<Suggestion> suggestions;
+
+    TrieNode* node = getNode(prefix);
+
+    if (node == nullptr || k <= 0)
+        return suggestions;
+
+    std::priority_queue<
+        Suggestion,
+        std::vector<Suggestion>,
+        CompareFrequency> heap;
+
+    std::string currentWord = prefix;
+
+    dfsHeap(node, currentWord, heap, k);
+
+    while (!heap.empty()) {
+        suggestions.push_back(heap.top());
+        heap.pop();
+    }
+
+    std::sort(suggestions.begin(), suggestions.end(),
+        [](const auto& a, const auto& b) {
+
+            if (a.second != b.second)
+                return a.second > b.second;
+
+            return a.first < b.first;
+        });
+
+    return suggestions;
+}
+
 
 void Trie::updateFrequency(const std::string& word) {
     TrieNode* node = getNode(word);
