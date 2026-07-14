@@ -30,10 +30,12 @@ public:
  */
 class Trie {
 private:
-    TrieNode* root;
-// Alias representing an autocomplete suggestion
-// as (word, frequency).
+
+    // Alias representing an autocomplete suggestion
+    // as (word, frequency).
     using Suggestion = std::pair<std::string, int>;
+
+    TrieNode* root;
 
 // Comparator for maintaining a min-heap
 // based on word frequency.
