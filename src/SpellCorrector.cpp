@@ -3,6 +3,24 @@
 #include <fstream>
 #include <algorithm>
 #include <numeric>
+#include <cctype>
+
+// Converts a word to lowercase and validates that it
+// contains only alphabetic characters.
+// Returns an empty string if the word is invalid.
+static std::string sanitizeWord(std::string word) {
+
+    for (char& ch : word)
+        ch = std::tolower(static_cast<unsigned char>(ch));
+
+    for (char ch : word) {
+        if (!std::isalpha(static_cast<unsigned char>(ch)))
+            return "";
+    }
+
+    return word;
+}
+
 
 bool SpellCorrector::loadDictionary(const std::string& filename) {
 
@@ -15,8 +33,15 @@ bool SpellCorrector::loadDictionary(const std::string& filename) {
 
     std::string word;
 
-    while (file >> word)
-        dictionary.push_back(word);
+    while (file >> word) {
+
+    word = sanitizeWord(word);
+
+    if (word.empty())
+        continue;
+
+    dictionary.push_back(word);
+}
 
     return true;
 }
