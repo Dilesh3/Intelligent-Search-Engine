@@ -13,6 +13,17 @@ Trie::Trie() {
     root = new TrieNode();
 }
 
+
+bool Trie::CompareFrequency::operator()(
+    const Suggestion& a,
+    const Suggestion& b) const {
+
+    if (a.second != b.second)
+        return a.second > b.second;
+
+    return a.first < b.first;
+}
+
 Trie::~Trie() {
     deleteTrie(root);
 }
@@ -98,6 +109,55 @@ void Trie::dfs(TrieNode* node, std::string& currentWord,
 }
 
 
+void Trie::dfsHeap(
+    TrieNode* node,
+    std::string& currentWord,
+    std::priority_queue<
+        Suggestion,
+        std::vector<Suggestion>,
+        CompareFrequency>& heap,
+    int k) const {
+
+    if (node == nullptr)
+        return;
+
+    if (node->isEndOfWord) {
+
+        Suggestion current = {currentWord, node->frequency};
+
+        if ((int)heap.size() < k) {
+
+            heap.push(current);
+
+        }
+           else if (
+               current.second > heap.top().second ||
+               (current.second == heap.top().second &&
+               current.first < heap.top().first)
+               ) {
+                    heap.pop();
+                    heap.push(current);
+           }
+    }
+
+    for (int i = 0; i < 26; i++) {
+
+        if (node->children[i] != nullptr) {
+
+            currentWord.push_back('a' + i);
+
+            dfsHeap(
+                node->children[i],
+                currentWord,
+                heap,
+                k);
+
+            currentWord.pop_back();
+        }
+    }
+}
+
+
 std::vector<std::pair<std::string, int>> Trie::autocomplete(const std::string& prefix) const {
     std::vector<std::pair<std::string, int>> suggestions;
 
@@ -110,9 +170,13 @@ std::vector<std::pair<std::string, int>> Trie::autocomplete(const std::string& p
     dfs(node, currentWord, suggestions);
 
     std::sort(suggestions.begin(), suggestions.end(),
-        [](const auto& a, const auto& b) {
+            [](const auto& a, const auto& b) {
+
+        if (a.second != b.second)
             return a.second > b.second;
-        });
+
+        return a.first < b.first;
+    });
 
     return suggestions;
 }
