@@ -28,8 +28,8 @@ int SpellCorrector::levenshteinDistance(
     const std::string& a = (s1.size() < s2.size()) ? s1 : s2;
     const std::string& b = (s1.size() < s2.size()) ? s2 : s1;
 
-    int n = a.size();
-    int m = b.size();
+    const int n = a.size();
+    const int m = b.size();
 
     std::vector<int> prev(n + 1);
     std::vector<int> curr(n + 1);
@@ -58,12 +58,12 @@ int SpellCorrector::levenshteinDistance(
     return prev[n];
 }
 
-std::vector<std::pair<std::string,int>>
+std::vector<SpellCorrector::Suggestion>
 SpellCorrector::suggest(
     const std::string& word,
     int maxSuggestions) const {
 
-    std::vector<std::pair<std::string,int>> candidates;
+    std::vector<SpellCorrector::Suggestion> candidates;
 
     for (const auto& dictWord : dictionary) {
 
