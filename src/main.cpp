@@ -24,15 +24,20 @@ int main() {
         std::cout << "3. Exit\n";
         std::cout << "Enter your choice: ";
 
-        std::cin >> choice;
-
+        if (!(std::cin >> choice)) {
+            std::cin.clear();
+            std::cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            std::cout << "Invalid input.\n";
+            continue;
+        }
+        
         switch (choice) {
 
         case 1: {
 
             std::string word;
 
-            std::cout << "Enter word: ";
+            std::cout << "Enter search term: ";
             std::cin >> word;
 
             if (engine.search(word)) {
@@ -77,7 +82,19 @@ int main() {
             //auto suggestions = engine.autocomplete(prefix);
             int k;
             std::cout << "Number of suggestions: ";
-            std::cin >> k;
+            if (!(std::cin >> k)) {
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                std::cout << "Invalid input.\n";
+                break;
+            }
+
+            if (k <= 0) {
+                std::cout << "Number of suggestions must be positive.\n";
+                break;
+            }
+
+
             auto suggestions = engine.autocomplete(prefix, k);
             if (suggestions.empty()) {
                 
