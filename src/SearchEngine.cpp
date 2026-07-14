@@ -25,7 +25,8 @@ bool SearchEngine::search(const std::string& word) {
 
 std::vector<std::pair<std::string,int>>
 SearchEngine::autocomplete(const std::string& prefix, int k) const {
-
+    
+    return trie.autocomplete(prefix);
     return trie.autocompleteHeap(prefix, k);
 }
 
