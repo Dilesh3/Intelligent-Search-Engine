@@ -78,8 +78,11 @@ public:
     bool startsWith(const std::string& prefix) const;
 
     // Returns autocomplete suggestions along with frequencies.
-    std::vector<std::pair<std::string, int>>
-    autocomplete(const std::string& prefix) const;
+    std::vector<std::pair<std::string,int>>
+    autocomplete(
+    const std::string& prefix,
+    int k = 5
+    ) const;
 
 // Returns the top-k autocomplete suggestions
 // using a heap-based optimization.
