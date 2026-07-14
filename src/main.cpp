@@ -74,12 +74,15 @@ int main() {
             std::cout << "Enter prefix: ";
             std::cin >> prefix;
 
-            auto suggestions = engine.autocomplete(prefix);
-
+            //auto suggestions = engine.autocomplete(prefix);
+            int k;
+            std::cout << "Number of suggestions: ";
+            std::cin >> k;
+            auto suggestions = engine.autocomplete(prefix, k);
             if (suggestions.empty()) {
-
+                
                 std::cout << "No suggestions found.\n";
-
+                
             } else {
 
                 std::cout << "\nAutocomplete Suggestions:\n";
