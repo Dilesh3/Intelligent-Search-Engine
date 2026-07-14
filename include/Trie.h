@@ -33,13 +33,12 @@ private:
     TrieNode* root;
 // Alias representing an autocomplete suggestion
 // as (word, frequency).
-using Suggestion = std::pair<std::string, int>;
+    using Suggestion = std::pair<std::string, int>;
 
 // Comparator for maintaining a min-heap
 // based on word frequency.
-struct CompareFrequency {
-    bool operator()(const Suggestion& a,
-                    const Suggestion& b) const;
+    struct CompareFrequency {
+        bool operator()(const Suggestion& a, const Suggestion& b) const;
 };
 
 // Performs DFS while maintaining only the
@@ -59,7 +58,7 @@ void dfsHeap(
 
     // Performs DFS from the given node to collect words (will be useful for autocomplete).
     void dfs(TrieNode* node, std::string& currentWord,
-             std::vector<std::pair<std::string, int>>& suggestions) const;
+             std::vector<Suggestion>& suggestions) const;
 
     // Frees all dynamically allocated nodes.
     void deleteTrie(TrieNode* node);
@@ -84,7 +83,7 @@ public:
     std::vector<Suggestion> 
     autocomplete(const std::string& prefix, int k) const;
 
-    std::vector<std::pair<std::string,int>>
+    std::vector<Suggestion> 
     autocompleteHeap(const std::string& prefix, int k = 5) const;
     // Updates the frequency of the word.
     void updateFrequency(const std::string& word);
