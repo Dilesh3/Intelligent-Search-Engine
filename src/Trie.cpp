@@ -161,25 +161,29 @@ void Trie::dfsHeap(
 }
 
 
-std::vector<std::pair<std::string, int>> Trie::autocomplete(const std::string& prefix) const {
+std::vector<std::pair<std::string, int>> 
+Trie::autocomplete(const std::string& prefix, int k) const {
     std::vector<std::pair<std::string, int>> suggestions;
 
     TrieNode* node = getNode(prefix);
 
-    if (node == nullptr)  return suggestions;
+    if (node == nullptr || k <= 0)  return suggestions;
 
     std::string currentWord = prefix;
 
     dfs(node, currentWord, suggestions);
 
-    std::sort(suggestions.begin(), suggestions.end(),
-            [](const auto& a, const auto& b) {
+std::sort(suggestions.begin(), suggestions.end(),
+        [](const auto& a, const auto& b) {
 
         if (a.second != b.second)
             return a.second > b.second;
 
         return a.first < b.first;
     });
+
+    if ((int)suggestions.size() > k)
+        suggestions.resize(k);
 
     return suggestions;
 }
@@ -208,14 +212,17 @@ Trie::autocompleteHeap(const std::string& prefix, int k) const {
         heap.pop();
     }
 
-    std::sort(suggestions.begin(), suggestions.end(),
+std::sort(suggestions.begin(), suggestions.end(),
         [](const auto& a, const auto& b) {
 
-            if (a.second != b.second)
-                return a.second > b.second;
+        if (a.second != b.second)
+            return a.second > b.second;
 
-            return a.first < b.first;
-        });
+        return a.first < b.first;
+    });
+
+    if ((int)suggestions.size() > k)
+        suggestions.resize(k);
 
     return suggestions;
 }
